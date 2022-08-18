@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
 // icons
-import { EyeIcon, EyeOffIcon } from "@heroicons/react/outline";
+import { ExclamationIcon, EyeIcon, EyeOffIcon } from "@heroicons/react/outline";
 
-function Password({ label, placeholder, type, error, message, ...rest }) {
+function Password({ label, placeholder, type, error, ...rest }) {
   const [show, setShow] = useState(false);
 
   return (
@@ -33,7 +33,12 @@ function Password({ label, placeholder, type, error, message, ...rest }) {
         )}
       </div>
 
-      {message && <h1 className="text-red-400 text-lg">{message}</h1>}
+      {error && (
+        <div className="flex space-x-2 text-red-400">
+          <ExclamationIcon className="w-4" />
+          <h1 className="text-md">{error}</h1>
+        </div>
+      )}
     </div>
   );
 }

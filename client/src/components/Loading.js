@@ -2,7 +2,7 @@ function Loading() {
   return (
     <button
       type="button"
-      className="h-10 w-full text-white text-lg font-medium bg-[#0f5abb] cursor-not-allowed  rounded-md flex items-center justify-center"
+      className="h-11 w-full text-white text-lg font-medium bg-[#0f5abb] cursor-not-allowed  rounded-md flex items-center justify-center"
     >
       <svg
         className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"

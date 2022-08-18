@@ -43,7 +43,6 @@ async function addArticles(req, res) {
       .status(200)
       .json({ message: `Artikel ${title} berhasil di tambahkan` });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: "Terjadi Kesalahan" });
   }
 }
@@ -251,13 +250,36 @@ async function detailArticles(req, res) {
 
       const articlesAfterCount = await articlesModel
         .findOne({ _id: articles._id })
-        .sort({ createdAt: -1 })
-        .populate({
-          path: "authourId",
-          select: ["fullName", "email", "role", "imageUrl"],
-        });
+        .sort({ createdAt: -1 });
 
-      return res.status(200).json({ data: articlesAfterCount });
+      const authour = await authModel.findById({
+        _id: articlesAfterCount.authourId,
+      });
+
+      const results = {
+        authour: {
+          fullName: authour.fullName,
+          email: authour.email,
+          imageUrl: authour.imageUrl,
+        },
+        _id: articlesAfterCount._id,
+        title: articlesAfterCount.title,
+        category: articlesAfterCount.category,
+        dislike: articlesAfterCount.dislike,
+        like: articlesAfterCount.like,
+        view: articlesAfterCount.view,
+        hastag: articlesAfterCount.hastag,
+        imageUrl: articlesAfterCount.imageUrl,
+        imageUrlCredit: articlesAfterCount.imageUrlCredit,
+        published: articlesAfterCount.published,
+        reference: articlesAfterCount.reference,
+        description: articlesAfterCount.description,
+        description: articlesAfterCount.description,
+        updatedAt: articlesAfterCount.updatedAt,
+        createdAt: articlesAfterCount.createdAt,
+      };
+
+      return res.status(200).json({ data: results });
     }
   } catch (error) {
     console.log(error);

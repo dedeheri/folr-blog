@@ -10,11 +10,7 @@ import { logo } from "../../assets/image";
 
 function Navbar({ theme, loading, data }) {
   return (
-    <div className="h-20 flex items-center justify-between max-w-7xl mx-auto px-4">
-      <Link to={"/dashboard"}>
-        <img src={logo} alt={logo} className="w-9 md:w-11" />
-      </Link>
-
+    <div className="h-16 flex sticky top-0 bg-white dark:bg-[#18191a] z-40 dark:border-[#353535] items-center justify-end border-b px-10">
       <div className="flex items-center space-x-2">
         {/* search */}
         <Search />

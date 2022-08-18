@@ -11,6 +11,7 @@ const deletedImage = require("../utils/deleteImage");
 // models
 const authModel = require("../model/auth");
 const authHistoryModel = require("../model/authHistory");
+const titleCase = require("../utils/case");
 // token
 function generetedAccessToken(props, expires) {
   return jwt.sign({ id: props }, process.env.ACCESS_TOKEN, {
@@ -45,13 +46,32 @@ async function registration(req, res) {
   const salt = 10;
   const passwordGenereted = await bcryptjs.hash(password, salt);
 
+  // capital
+
   // callback
   try {
+    const ip = await axios.get("https://api.ipify.org?format=json");
+    const location = await axios.get(
+      `https://api.ipfind.com/?ip=${ip.data.ip}&auth=614829d3-066a-4dd7-aaec-6a27bb82a58f`
+    );
+    const device = detector();
+
     const auth = await authModel({
       imageUrl: imageUrl?.path,
-      fullName: fullName,
+      fullName: titleCase(fullName),
       email: email,
       password: passwordGenereted,
+      device: {
+        os: device.os.name,
+        client: device.client.name,
+      },
+      location: {
+        ip: location.data.ip_address,
+        countryCode: location.data.country_code,
+        countryName: location.data.country,
+        region: location.data.region,
+        city: location.data.city,
+      },
     }).save();
 
     // put refresh token
@@ -61,9 +81,8 @@ async function registration(req, res) {
       { new: true }
     );
 
-    return res.status(200).json({ message: "Akun berhasil dibuat" });
+    return res.status(200).json({ message: `Email ${email} berhasil dibuat` });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: "Terjadi Kesalahan" });
   }
 }
@@ -168,6 +187,7 @@ async function login(req, res) {
         : generetedAccessToken(auth._id, "1d"),
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ message: "Terjadi kesalahan" });
   }
 }

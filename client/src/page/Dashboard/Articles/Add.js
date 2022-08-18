@@ -2,77 +2,69 @@ import {
   PlusIcon,
   CheckIcon,
   SelectorIcon,
-  TagIcon,
   HashtagIcon,
   PhotographIcon,
   DocumentSearchIcon,
   TrashIcon,
+  ViewGridAddIcon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
+  ExclamationIcon,
 } from "@heroicons/react/outline";
 import { Transition, Listbox } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 
 // text
 
-import { categoryRequest } from "../../../utils/action";
+import { addArticlesRequest, categoryRequest } from "../../../utils/action";
 
 // components
 import Input from "../../../components/Input";
 import Button from "../../../components/Button";
-import api from "../../../apis/api";
 import RichText from "../../../components/Dashboard/RichText";
 import ImageUpload from "../../../components/Dashboard/ImageUpload";
 import Loading from "../../../components/Loading";
 import Back from "../../../components/Back";
+import Sub from "../../../components/Dashboard/Sub";
 
 // draft
 import draftToHtml from "draftjs-to-html";
 import { EditorState, convertToRaw } from "draft-js";
-import ListBoxCategory from "../../../components/Dashboard/ListBoxCategory";
 
 function Add() {
-  // lables
-  const [topics, setTopics] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [sidebar, setSidebar] = useState(true);
 
-  // procces
-  const [fetching, setFetching] = useState(false);
-  const [message, setMessage] = useState("");
-  const [success, setSuccess] = useState("");
+  const [category, setCategory] = useState({
+    category: [],
+    error: "",
+    loading: true,
+    selected: "",
+  });
 
-  // add
-  const [title, setTitle] = useState("");
-  const [description, setDiscription] = useState(EditorState.createEmpty());
-  const [reference, setReference] = useState([]);
-  const [label, setLabel] = useState("");
-  const [hastag, setHastag] = useState("");
-  const [imageUrl, setImageUrl] = useState(null);
-  const [imageUrlCredit, setImageUrlCredit] = useState("");
-
-  const [listBoxCategory, setListBoxCategory] = useState("");
   const [articles, setArticles] = useState({
     title: "",
-    description: "",
+    description: EditorState.createEmpty(),
     reference: [],
     category: "",
-    hastag: [],
+    hastag: "",
     imageUrl: null,
-    imageUrlCredit: null,
+    imageUrlCredit: "",
     imagePriview: null,
+
     fetching: false,
     message: null,
     success: false,
     error: false,
   });
 
-  const [category, setCategory] = useState({
-    category: [],
-    error: "",
-    loading: true,
-  });
-
   // priview
-  const [imagePriview, setImagePriview] = useState(null);
+  function handleInputparty(key, value) {
+    setArticles((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  }
+
   // calling api
   useEffect(() => {
     async function getCategory() {
@@ -82,6 +74,10 @@ function Add() {
           category: response.data.data,
           loading: false,
         });
+        setArticles((prev) => ({
+          ...prev,
+          category: response.data.data[0].category,
+        }));
       } catch (error) {
         setCategory({
           error: error.response.data,
@@ -96,28 +92,32 @@ function Add() {
   function handleImagePriview(e) {
     const img = e.target.files[0];
     if (img) {
-      setImagePriview(URL.createObjectURL(img));
-      setImageUrl(img);
+      handleInputparty("imagePriview", URL.createObjectURL(img));
+      handleInputparty("imageUrl", img);
     }
   }
 
   function deleteImagePriview() {
-    setImagePriview(null);
-    setImageUrl(null);
+    handleInputparty("imagePriview", null);
+    handleInputparty("imageUrl", null);
   }
 
   function handleEditorState(description) {
-    setDiscription(description);
+    handleInputparty("description", description);
   }
 
   const [increaseReference, setIncreaseReference] = useState([
     { reference: "" },
   ]);
 
+  function handleChangeInput(e) {
+    handleInputparty([e.target.name], e.target.value);
+  }
+
   const handleDynamicReference = (index, event) => {
     let data = [...increaseReference];
     data[index][event.target.name] = event.target.value;
-    setReference(data);
+    setArticles((prev) => ({ ...prev, reference: data }));
   };
   const addFieldsReference = () => {
     let newfield = { reference: "" };
@@ -129,268 +129,284 @@ function Add() {
     setIncreaseReference(data);
   };
 
+  function handleChangeListbox(e) {
+    handleInputparty("category", e.category);
+  }
+
   async function handleAddArticles(e) {
     e.preventDefault();
 
+    // proccess fetching true
+    handleInputparty("fetching", true);
+
     const formData = new FormData();
-    formData.append("title", title);
+    formData.append("title", articles.title);
     formData.append(
       "description",
-      draftToHtml(convertToRaw(description.getCurrentContent()))
+      draftToHtml(convertToRaw(articles.description.getCurrentContent()))
     );
-    formData.append("imageUrl", imageUrl);
-    formData.append("imageUrlCredit", imageUrlCredit);
-    for (let i = 0; i < reference.length; i++) {
-      formData.append("reference", reference[i].reference);
+    formData.append("imageUrl", articles.imageUrl);
+    formData.append("imageUrlCredit", articles.imageUrlCredit);
+    for (let i = 0; i < articles.reference.length; i++) {
+      formData.append("reference", articles.reference[i].reference);
     }
-    formData.append("category", label?.category);
-    formData.append("hastag", hastag.split(" "));
+    formData.append("category", articles.category);
+    formData.append(
+      "hastag",
+      articles.hastag ? articles.hastag.split(",") : ""
+    );
 
     try {
-      setFetching(true);
-      const data = await api.post("/api/v1/articles/add", formData);
-      setFetching(false);
-      setSuccess(data?.data?.message);
+      const data = await addArticlesRequest(formData);
+      handleInputparty("fetching", false);
+      handleInputparty("success", true);
+      handleInputparty("message", data?.data?.message);
       if (data) {
         setInterval(() => {
           window.location.href = "/dashboard/articles";
         }, 2000);
       }
     } catch (error) {
-      setMessage(error.response.data);
-      setFetching(false);
+      handleInputparty("fetching", false);
+      handleInputparty("success", false);
+      handleInputparty("message", error.response.data);
     }
   }
 
-  console.log(category);
-
   return (
-    <div className="space-y-3 pt-4 md:pt-8 px-4">
-      {success && (
+    <Sub title={"Tambah Artikel"}>
+      {/* notification */}
+      {articles.success && (
         <div className="dark:bg-green-700 bg-green-400 flex items-center px-5 h-10 w-full rounded-md">
-          <h1 className="font-medium text-lg">{success}</h1>
+          <h1 className="font-medium text-lg">{articles.message}</h1>
         </div>
       )}
 
-      {message?.message && (
-        <div className="dark:bg-red-700 flex items-center px-5 h-10 w-full rounded-md">
-          <h1 className="font-medium text-lg">{message?.message}</h1>
-        </div>
-      )}
-      {error && (
-        <div className="dark:bg-red-700 flex items-center px-5 h-10 w-full rounded-md">
-          <h1 className="font-medium text-lg">{error}</h1>
-        </div>
-      )}
+      {/* main */}
+      <form className="space-y-4" onSubmit={handleAddArticles}>
+        {sidebar ? (
+          <div
+            onClick={() => setSidebar(!sidebar)}
+            className="flex justify-end items-center text-gray-500 hover:text-[#0f5abb] cursor-pointer duration-300"
+          >
+            <h1 className="font-medium">Sembunyikan </h1>
+            <ChevronRightIcon className="w-5" />
+          </div>
+        ) : (
+          <div
+            onClick={() => setSidebar(!sidebar)}
+            className="flex justify-end items-center text-gray-500 hover:text-[#0f5abb] cursor-pointer duration-300"
+          >
+            <ChevronLeftIcon className="w-5" />
+            <h1 className="font-medium">Tampilkan </h1>
+          </div>
+        )}
+        <div className="md:flex ">
+          <div className="shadow-lg rounded-md border dark:border-[#353535] w-full h-full">
+            {/* title */}
+            <div className="px-5 py-3 space-y-1">
+              <input
+                className={`outline-none border-b bg-transparent w-full text-xl font-medium ${
+                  articles?.message?.validation?.title?.msg
+                    ? "border-red-500"
+                    : "border-transparent"
+                }`}
+                placeholder="Judul"
+                name="title"
+                onChange={handleChangeInput}
+              />
 
-      <form
-        onSubmit={handleAddArticles}
-        className="grid grid-cols-1 lg:grid-cols-6 gap-6 pb-10 "
-      >
-        {/* success */}
-
-        {/* main */}
-        <div className="w-full h-full lg:col-span-4">
-          <div className="border p-5 dark:border-[#353535] rounded-xl space-y-4">
-            <Input
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={"Judul"}
-              error={message?.validation?.title}
-              message={message?.validation?.title?.msg}
-            />
-
-            {/* text area */}
+              {articles?.message?.validation?.title?.msg && (
+                <div className="flex space-x-2 text-red-400">
+                  <ExclamationIcon className="w-4" />
+                  <h1 className="text-md">
+                    {articles?.message?.validation?.title?.msg}
+                  </h1>
+                </div>
+              )}
+            </div>
+            {/* rich text */}
             <RichText
               onEditorStateChange={handleEditorState}
-              editorState={description}
-              error={message?.validation?.description?.msg}
+              editorState={articles.description}
+              error={articles?.message?.validation?.description?.msg}
             />
           </div>
-        </div>
 
-        {/* featured */}
-        <div className="w-full h-full lg:col-span-2 space-y-4">
-          {/* thubmnail */}
-          <div className="border dark:border-[#353535] rounded-xl ">
-            <div className="flex items-center border-b dark:border-[#353535] px-4 space-x-2">
-              <PhotographIcon className="w-5" />
-              <h1 className=" py-2">Koper</h1>
-            </div>
-
-            <div className="px-4 py-2 space-y-2">
-              <ImageUpload
-                preview={imagePriview}
-                error={message}
-                onChange={handleImagePriview}
-                deletePriview={deleteImagePriview}
-              />
-            </div>
-            <div className="px-4 py-2 space-y-1">
-              <Input
-                link={true}
-                onChange={(e) => setImageUrlCredit(e.target.value)}
-                error={message?.validation?.imageUrlCredit}
-                message={message?.validation?.imageUrlCredit?.msg}
-                placeholder={"Sumber"}
-              />
-              <h1 className="text-sm text-gray-600 dark:text-gray-400 italic">
-                Sumber Gambar
-              </h1>
-            </div>
-          </div>
-
-          {/* referensi */}
-          <div className="border dark:border-[#353535] rounded-xl ">
-            <div className="flex items-center border-b dark:border-[#353535] px-4 space-x-2">
-              <DocumentSearchIcon className="w-5" />
-              <h1 className=" py-2">Referensi</h1>
-            </div>
-            <div className="px-4 py-3 space-y-2">
-              {increaseReference.map((_, index) => (
-                <Input
-                  link={true}
-                  error={message?.validation?.reference}
-                  message={message?.validation?.reference?.msg}
-                  placeholder={"referensi"}
-                  key={index}
-                  name="reference"
-                  onChange={(event) => handleDynamicReference(index, event)}
-                />
-              ))}
-              <div className="flex justify-between">
-                <div
-                  onClick={addFieldsReference}
-                  className="flex items-center space-x-3 cursor-pointer dark:text-gray-400 hover:dark:text-white duration-300"
-                >
-                  <PlusIcon className="w-5" />
-                  <h1>Tambah Referensi</h1>
+          {/* sidebar */}
+          <div className={sidebar ? "w-full md:w-[30rem] md:pl-7" : "w-0"}>
+            <div className={`space-y-5 px-2 ${sidebar ? "block" : "hidden"}`}>
+              {/* thubmnil */}
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <PhotographIcon className="w-5" />
+                  <h1>Koper</h1>
                 </div>
 
-                {reference.length > 1 && (
-                  <div
-                    onClick={removeFieldsReference}
-                    className="flex items-center space-x-3 cursor-pointer dark:text-gray-400 hover:dark:text-white duration-300"
-                  >
-                    <TrashIcon className="w-5" />
-                    <h1>Hapus Referensi</h1>
+                <div className="space-y-2">
+                  <ImageUpload
+                    preview={articles.imagePriview}
+                    error={articles?.message?.validation?.imageUrl?.msg}
+                    onChange={handleImagePriview}
+                    deletePriview={deleteImagePriview}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Input
+                    name="imageUrlCredit"
+                    onChange={handleChangeInput}
+                    error={articles?.message?.validation?.imageUrlCredit?.msg}
+                    placeholder={"Sumber"}
+                  />
+                </div>
+              </div>
+
+              <div className="border-b dark:border-[#353535]" />
+
+              {/* reference */}
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <DocumentSearchIcon className="w-5" />
+                  <h1>Referensi</h1>
+                </div>
+                <div className="space-y-2">
+                  {increaseReference.map((_, index) => (
+                    <Input
+                      link={true}
+                      error={articles?.message?.validation?.reference?.msg}
+                      placeholder={"referensi"}
+                      key={index}
+                      name="reference"
+                      onChange={(event) => handleDynamicReference(index, event)}
+                    />
+                  ))}
+                  <div className="flex justify-between">
+                    <div
+                      onClick={addFieldsReference}
+                      className="flex items-center space-x-3 cursor-pointer dark:text-gray-400 hover:dark:text-white duration-300"
+                    >
+                      <PlusIcon className="w-5" />
+                      <h1>Tambah Referensi</h1>
+                    </div>
+
+                    {increaseReference.length > 1 && (
+                      <div
+                        onClick={removeFieldsReference}
+                        className="flex items-center space-x-3 cursor-pointer dark:text-gray-400 hover:dark:text-white duration-300"
+                      >
+                        <TrashIcon className="w-5" />
+                        <h1>Hapus Referensi</h1>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+              </div>
+
+              <div className="border-b dark:border-[#353535]" />
+
+              {/* category */}
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <ViewGridAddIcon className="w-5" />
+                  <h1>Kategori</h1>
+                </div>
+                <Listbox
+                  value={articles.category}
+                  onChange={(e) => handleChangeListbox(e)}
+                >
+                  <div className="relative">
+                    <Listbox.Button className="relative w-full cursor-pointer rounded-lg border dark:border-[#363535] py-2 pl-3  text-left outline-none">
+                      {category.loading ? (
+                        <div className="h-6 w-1/2 animate-pulse bg-gray-500 rounded-md" />
+                      ) : (
+                        <span className="block truncate">
+                          {articles?.category}
+                        </span>
+                      )}
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                        <SelectorIcon
+                          className="h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </Listbox.Button>
+                    <Transition
+                      as={Fragment}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0"
+                    >
+                      <Listbox.Options className="absolute  mt-1 max-h-52  w-full  overflow-auto rounded-md border dark:border-[#363535] bg-white  dark:bg-[#18191a] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-thumb-rounded-full text-md z-40">
+                        {Object.values(category.category)?.map(
+                          (person, personIdx) => (
+                            <Listbox.Option
+                              key={personIdx}
+                              className={`relative cursor-pointer select-none py-2 pl-10 hover:bg-gray-100 hover:dark:bg-[#252525] pr-4 ${
+                                person.category === articles.category
+                                  ? "bg-gray-100 dark:bg-[#252525]"
+                                  : "text-white dark:text-white"
+                              }`}
+                              value={person}
+                            >
+                              <>
+                                <span
+                                  className={`block truncate text-black dark:text-white`}
+                                >
+                                  {person.category}
+                                </span>
+                                {person.category === articles.category ? (
+                                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#176cda]">
+                                    <CheckIcon
+                                      className="h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                  </span>
+                                ) : null}
+                              </>
+                            </Listbox.Option>
+                          )
+                        )}
+                      </Listbox.Options>
+                    </Transition>
+                  </div>
+                </Listbox>
+              </div>
+
+              <div className="border-b dark:border-[#353535]" />
+
+              {/* hastag */}
+
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <HashtagIcon className="w-5" />
+                  <h1>Hastag</h1>
+                </div>
+                <div className="space-y-1">
+                  <h1 className="text-sm text-gray-600 dark:text-gray-400 italic">
+                    Opsional
+                  </h1>
+                  <Input
+                    placeholder={"Hastag"}
+                    name="hastag"
+                    onChange={handleChangeInput}
+                  />
+                  <h1 className="text-sm text-gray-600 dark:text-gray-400 italic">
+                    Pisahkan hastag menggunakan koma
+                  </h1>
+                </div>
+              </div>
+
+              <div className="border-b dark:border-[#353535]" />
+
+              <div className="lg:flex lg:space-x-2 space-y-3 lg:space-y-0">
+                <Back />
+                {articles.fetching ? <Loading /> : <Button label={"Kirim"} />}
               </div>
             </div>
           </div>
-
-          {/* category */}
-          <div className="border dark:border-[#353535] rounded-xl ">
-            <div className="flex items-center border-b dark:border-[#353535] px-4 space-x-2">
-              <TagIcon className="w-5" />
-              <h1 className="py-2">Label</h1>
-            </div>
-
-            {/* listbox */}
-            <div className="px-4 py-3">
-              <ListBoxCategory
-                data={category.category}
-                loading={category.loading}
-                selected={category.category}
-                select={listBoxCategory}
-                value={listBoxCategory}
-                onChange={setListBoxCategory}
-              />
-              {/* <Listbox value={label} onChange={setLabel}>
-                <div className="relative">
-                  <Listbox.Button className="relative w-full cursor-pointer rounded-lg border dark:border-[#363535] py-2 pl-3  text-left outline-none">
-                    {loading ? (
-                      <div className="h-6 w-1/2 animate-pulse bg-gray-500 rounded-md" />
-                    ) : (
-                      <span className="block truncate">{label?.category}</span>
-                    )}
-                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                      <SelectorIcon
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                    </span>
-                  </Listbox.Button>
-                  <Transition
-                    as={Fragment}
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <Listbox.Options className="absolute  mt-1 max-h-52  w-full  overflow-auto rounded-md border dark:border-[#363535] bg-white dark:bg-black scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-thumb-rounded-full  text-md z-40">
-                      {Object.values(topics)?.map((person, personIdx) => (
-                        <Listbox.Option
-                          key={personIdx}
-                          className={({ active }) =>
-                            `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                              active
-                                ? "bg-green-200 dark:bg-[#055a2b] text-white dark:text-white"
-                                : "text-white dark:text-white"
-                            }`
-                          }
-                          value={person}
-                        >
-                          {({ selected }) => (
-                            <>
-                              <span
-                                className={`block truncate text-black dark:text-white`}
-                              >
-                                {person.category}
-                              </span>
-                              {selected ? (
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#2BEF82]">
-                                  <CheckIcon
-                                    className="h-5 w-5"
-                                    aria-hidden="true"
-                                  />
-                                </span>
-                              ) : null}
-                            </>
-                          )}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </Transition>
-                </div>
-              </Listbox> */}
-            </div>
-            {/* end lisbox */}
-            <div className="px-4 py-2 flex items-center space-x-3">
-              <PlusIcon className="w-5" />
-              <h1>Tambah katagori</h1>
-            </div>
-          </div>
-
-          {/* hastag */}
-          <div className="border dark:border-[#353535] rounded-xl ">
-            <div className="flex items-center border-b dark:border-[#353535] px-4 space-x-2">
-              <HashtagIcon className="w-5" />
-              <h1 className="py-2">Hastag</h1>
-            </div>
-            <div className="px-4 py-3 space-y-1">
-              <h1 className="text-sm text-gray-600 dark:text-gray-400 italic">
-                Opsional
-              </h1>
-
-              <Input
-                placeholder={"Hastag"}
-                onChange={(e) => setHastag(e.target.value)}
-              />
-
-              <h1 className="text-sm text-gray-600 dark:text-gray-400 italic">
-                Pisahkan hastag menggunakan koma
-              </h1>
-            </div>
-          </div>
-
-          {/* button */}
-          <div className="lg:flex lg:space-x-2 space-y-3 lg:space-y-0">
-            <Back />
-            {fetching ? <Loading /> : <Button label={"Kirim"} />}
-          </div>
         </div>
       </form>
-    </div>
+    </Sub>
   );
 }
 

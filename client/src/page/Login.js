@@ -1,9 +1,5 @@
-import axios from "axios";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-
-import config from "../apis/config";
 
 import Button from "../components/Button";
 import Href from "../components/Href";
@@ -13,81 +9,83 @@ import Password from "../components/Password";
 import Checkbox from "../components/Checkbox";
 
 // utlis
-import detectDevice from "../utils/detect";
 import { loginRequest } from "../utils/action";
-import { ExclamationIcon } from "@heroicons/react/outline";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+    rememberMe: false,
+    message: "",
+    error: false,
+    success: false,
+  });
 
-  const [error, setError] = useState("");
-  const [fetching, setFetching] = useState("");
-
-  const [deviceUser, setDeviceUser] = useState("");
-
-  useEffect(() => {
-    detectDevice(setDeviceUser);
-  }, [deviceUser]);
+  function handleSubmitEvent(e) {
+    setData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+      rememberMe: e.target.checked,
+    }));
+  }
 
   async function handleLogin(e) {
     e.preventDefault();
 
     try {
-      setFetching(true);
-      const data = await loginRequest(email, password, rememberMe);
-      setFetching(false);
+      const formData = new FormData();
+      formData.append("email", data.email);
+      formData.append("password", data.password);
+      formData.append("rememberMe", data.rememberMe);
+
+      setData((prev) => ({ ...prev, fetching: true }));
+      await loginRequest(data.email, data.password, data.rememberMe);
+      setData((prev) => ({ ...prev, fetching: false }));
+      setData((prev) => ({ ...prev, success: true }));
+
       if (data) {
         window.location.href = "http://localhost:3000/dashboard";
       }
     } catch (error) {
-      setFetching(false);
-      setError(error.response.data);
+      console.log(error);
+      setData((prev) => ({ ...prev, fetching: false }));
+      setData((prev) => ({ ...prev, error: true }));
+      setData((prev) => ({ ...prev, message: error.response.data }));
     }
   }
 
   return (
-    <div className="w-[22rem]  mx-auto min-h-screen flex items-center">
+    <div className="w-[22rem] mx-auto flex items-center mt-20">
       <form onSubmit={handleLogin} className=" w-full space-y-14">
-        <h1 className="text-6xl font-bold text-center text-[#00AB4C] dark:text-[#2BEF82]">
-          Folr
-        </h1>
-
-        <div className="space-y-5 ">
-          {error?.message && (
-            <div className="bg-gray-100 dark:bg-[#353535] p-2 rounded-md flex items-center space-x-2">
-              <ExclamationIcon className="w-6 text-red-400 dark:text-500" />
-              <h1 className="text-red-400 dark:text-500 text-lg">
-                {error?.message}
-              </h1>
-            </div>
-          )}
-
+        <div className="space-y-5">
           <Input
             label={"Email"}
             placeholder={"Email"}
             type={"email"}
-            error={error?.validation?.email?.msg || error?.message?.email}
-            message={error?.validation?.email?.msg || error?.message?.email}
-            onChange={(e) => setEmail(e.target.value)}
+            error={
+              data?.message?.validation?.email?.msg ||
+              data?.message?.message?.email
+            }
+            name="email"
+            onChange={handleSubmitEvent}
           />
           <Password
             label={"Kata Sandi"}
             placeholder={"Kata Sandi"}
             type={"Kata Sandi"}
-            error={error?.validation?.password?.msg || error?.message?.password}
-            message={
-              error?.validation?.password?.msg || error?.message?.password
+            error={
+              data?.message?.validation?.password?.msg ||
+              data?.message?.message?.password
             }
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            onChange={handleSubmitEvent}
           />
 
           <div className="flex items-center justify-between">
             <Checkbox
               label={"Tetap masuk"}
-              value={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
+              name="rememberMe"
+              onChange={handleSubmitEvent}
             />
 
             <Link to="register">
@@ -96,9 +94,10 @@ function Login() {
               </h1>
             </Link>
           </div>
-
-          {fetching ? <Loading /> : <Button label={"Masuk"} />}
-          <Href label={"Registrasi"} href={"registration"} />
+          <div className="space-y-3">
+            {data.fetching ? <Loading /> : <Button label={"Masuk"} />}
+            <Href label={"Registrasi"} href={"registration"} />
+          </div>
         </div>
       </form>
     </div>

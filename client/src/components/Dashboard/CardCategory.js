@@ -91,14 +91,14 @@ function CardCategory({ id, category }) {
   }
 
   return (
-    <div className="border dark:border-[#353535] cursor-pointer hover:border-[#2374e1] duration-300 rounded-xl p-5">
+    <div className="bg-gray-100 dark:bg-[#353535] cursor-pointer border border-transparent hover:border-[#2374e1] duration-300 rounded-xl p-5">
       <div className="flex justify-between items-center">
         <h1 className="font-medium text-lg">{category}</h1>
         <div className="flex">
           <Tooltips text={"Hapus"} top="top-12">
             <button
               onClick={handleDeleteModal}
-              className="hover:bg-gray-200 hover:dark:bg-[#353535] p-2 rounded-full group duration-300"
+              className="hover:bg-red-200 hover:dark:bg-red-800 p-2 rounded-full group duration-300"
             >
               <TrashIcon className="w-5 text-gray-500 group-hover:text-red-500 duration-300" />
             </button>
@@ -106,7 +106,7 @@ function CardCategory({ id, category }) {
           <Tooltips text={"Edit"} top="top-12">
             <div
               onClick={handleEditModal}
-              className="hover:bg-gray-200 hover:dark:bg-[#353535] p-2 rounded-full group duration-300"
+              className="hover:bg-green-200 hover:dark:bg-green-800 p-2 rounded-full group duration-300"
             >
               <PencilIcon className="w-5 text-gray-500 group-hover:text-green-500 duration-300" />
             </div>

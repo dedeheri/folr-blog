@@ -8,6 +8,7 @@ import OpenSidebar from "../../../components/Dashboard/OpenSidebar";
 import Sub from "../../../components/Dashboard/Sub";
 import CardCategory from "../../../components/Dashboard/CardCategory";
 import NoData from "../../../components/NoData";
+import SubDarkMode from "../../../components/SubDarkMode";
 
 function Get() {
   // sidebar add

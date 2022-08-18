@@ -1,6 +1,6 @@
 import { ExclamationIcon } from "@heroicons/react/outline";
 
-function Input({ label, placeholder, type, error, link, message, ...rest }) {
+function Input({ label, placeholder, type, error, link, ...rest }) {
   return (
     <div className="space-y-1">
       <label className="text-lg">{label}</label>
@@ -13,10 +13,10 @@ function Input({ label, placeholder, type, error, link, message, ...rest }) {
         {...rest}
       />
 
-      {message && (
+      {error && (
         <div className="flex space-x-2 text-red-400">
           <ExclamationIcon className="w-4" />
-          <h1 className="text-md">{message}</h1>
+          <h1 className="text-md">{error}</h1>
         </div>
       )}
     </div>

@@ -3,9 +3,9 @@ import React from "react";
 function LoadingCard() {
   return (
     <div className="space-y-8 animate-pulse">
-      <div className="flex justify-end space-x-5">
-        <div className="h-10 w-40 rounded-md bg-gray-100 dark:bg-[#252525]" />
-        <div className="h-10 w-60 rounded-md bg-gray-100 dark:bg-[#252525]" />
+      <div className="flex justify-end space-x-3">
+        <div className="h-10 w-20 rounded-md bg-gray-100 dark:bg-[#252525]" />
+        <div className="h-10 w-28 rounded-md bg-gray-100 dark:bg-[#252525]" />
       </div>
 
       <div className="space-y-4">

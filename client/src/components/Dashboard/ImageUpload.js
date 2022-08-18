@@ -7,12 +7,10 @@ import React from "react";
 
 function ImageUpload({ error, preview, deletePriview, ...rest }) {
   return (
-    <div>
+    <div className="space-y-2">
       <div
         className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-dashed rounded-md ${
-          error?.validation?.imageUrl
-            ? " border border-red-500"
-            : "border dark:border-[#353535]"
+          error ? " border border-red-500" : "border dark:border-[#353535]"
         }`}
       >
         {preview ? (
@@ -78,10 +76,10 @@ function ImageUpload({ error, preview, deletePriview, ...rest }) {
         )}
       </div>
 
-      {error?.validation?.imageUrl?.msg && (
+      {error && (
         <div className="flex space-x-2 text-red-400">
           <ExclamationIcon className="w-4" />
-          <h1 className="text-md">{error?.validation?.imageUrl?.msg}</h1>
+          <h1 className="text-md">{error}</h1>
         </div>
       )}
     </div>

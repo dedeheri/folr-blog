@@ -1,42 +1,19 @@
-import { useEffect, useState } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
-import Container from "../components/Container";
+import { Route, Routes } from "react-router-dom";
 import DarkMode from "../components/DarkMode";
+import NavbarAuth from "../components/Dashboard/NavbarAuth";
 import Login from "../page/Login";
 import Registration from "../page/Registration";
-import { getUsers } from "../utils/action";
 
 function Auth() {
-  const [user, setUser] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    getUsers(setLoading, setUser, setError);
-  }, []);
-
-  const theme = JSON.parse(localStorage.getItem("theme") || false);
-
-  useEffect(() => {
-    localStorage.setItem("theme", JSON.stringify(theme));
-  }, [theme]);
-
-  if (user) {
-    return (
+  return (
+    <DarkMode>
+      <NavbarAuth />
       <Routes>
-        <Route path="*" element={<Navigate to={"/dashboard"} />} />
+        <Route path={"/"} element={<Login />} />
+        <Route path={"/registration"} element={<Registration />} />
       </Routes>
-    );
-  } else {
-    return (
-      <DarkMode theme={theme}>
-        <Routes>
-          <Route path={"/"} element={<Login />} />
-          <Route path={"/registration"} element={<Registration />} />
-        </Routes>
-      </DarkMode>
-    );
-  }
+    </DarkMode>
+  );
 }
 
 export default Auth;

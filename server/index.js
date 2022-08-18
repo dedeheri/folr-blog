@@ -35,7 +35,10 @@ function start() {
   databaseConnection();
 
   // static
-  app.use("/assets/", express.static(path.join(__dirname, "assets/")));
+  app.use(
+    "/assets/image/",
+    express.static(path.join(__dirname, "/assets/image/"))
+  );
 
   // handle error multer
   app.use(handleErrorMulter);

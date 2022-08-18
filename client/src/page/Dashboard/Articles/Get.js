@@ -65,11 +65,13 @@ function Get() {
   } else if (data.data.length === 0) {
     return (
       <Sub title={"Artikel"}>
-        <div className="flex space-x-4 justify-end items-center">
-          <Filter />
-          <Add label="Tambah Artikel" />
+        <div className="space-y-8">
+          <div className="flex justify-end items-center space-x-3">
+            <Filter />
+            <Add label="Tambah Artikel" />
+          </div>
+          <NoData />
         </div>
-        <NoData />
       </Sub>
     );
   } else if (error) {

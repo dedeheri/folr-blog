@@ -8,7 +8,6 @@ import {
 } from "@heroicons/react/solid";
 import { Popover, Tab, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
-import Tooltips from "../Tooltips";
 import api from "../../apis/api";
 import config from "../../apis/config";
 import { createSearchParams, useNavigate } from "react-router-dom";
@@ -71,12 +70,10 @@ function Filter() {
   return (
     <Popover className="relative pt-1">
       <Popover.Button className="group items-center">
-        <Tooltips text={"Sortir"} top="top-10 md:top-12">
-          <div className="h-10 md:bg-gray-100 md:dark:bg-[#252525] md:hover:bg-gray-300 md:hover:dark:bg-[#363535] md:px-4 rounded-md flex space-x-3 items-center">
-            <AdjustmentsIcon className="w-7 md:w-6" />
-            <h1 className="font-medium text-lg hidden md:block">Sortir</h1>
-          </div>
-        </Tooltips>
+        <div className="h-10 md:bg-gray-200 md:dark:bg-[#252525] md:hover:bg-gray-300 md:hover:dark:bg-[#363535] duration-300 md:px-4 rounded-md flex space-x-3 items-center">
+          <AdjustmentsIcon className="w-7 md:w-6" />
+          <h1 className="font-medium text-lg hidden md:block">Sortir</h1>
+        </div>
       </Popover.Button>
       <Transition
         as={Fragment}

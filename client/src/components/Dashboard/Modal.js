@@ -20,12 +20,12 @@ function Modal({ label, children, close, show }) {
       >
         <div className="border-b text-black dark:text-white dark:border-[#3a3b3c] px-5 py-3 flex items-center justify-between">
           <h1 className="text-xl font-medium">{label}</h1>
-          <button
+          <div
             onClick={handleClose}
-            className="bg-gray-100 hover:bg-gray-200 dark:bg-[#3a3b3c] dark:hover:bg-[#404142] p-2 duration-300 rounded-full"
+            className="bg-gray-100 cursor-pointer hover:bg-gray-200 dark:bg-[#3a3b3c] dark:hover:bg-[#404142] p-2 duration-300 rounded-full"
           >
             <XIcon className="w-5 text-gray-600 dark:text-gray-300 rounded-lg" />
-          </button>
+          </div>
         </div>
         <div className="space-y-2 pt-3 p-5">{children}</div>
       </div>

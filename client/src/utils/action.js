@@ -1,24 +1,30 @@
 import apis from "../apis/api";
 import config from "../apis/config";
 
-const loginRequest = (email, password, rememberMe) =>
-  apis.post(
+function loginRequest(email, password, rememberMe) {
+  return apis.post(
     "api/v1/auth/login",
-    {
-      email,
-      password,
-      rememberMe,
-    },
+    { email, password, rememberMe },
     config.headerJSON
   );
+}
+function registrationRequest(props) {
+  return apis.post("api/v1/auth/registration", props);
+}
 
 function getUsersRequest() {
   return apis.get("api/v1/auth/user", config.headerJSON);
 }
 
 // articles
+// get
 function getArticlesRequest(limit, r) {
   return apis.get(`api/v1/articles?limit=${limit}&${r}`, config.headerJSON);
+}
+
+// detail
+function getDetailArticlesRequest(id) {
+  return apis.get(`api/v1/articles/${id}`, config.headerJSON);
 }
 
 const categoryRequest = () => apis.get("api/v1/category", config.headerJSON);
@@ -33,6 +39,10 @@ function addCategoryRequest(props) {
   return apis.post("api/v1/category/add", props, config.headerJSON);
 }
 
+// artikel
+function addArticlesRequest(formData) {
+  return apis.post("/api/v1/articles/add", formData, config.headerJSON);
+}
 function detailArticlesRequest(id) {
   return apis.get(`/api/v1/articles/${id}`, config.headerJSON);
 }
@@ -102,4 +112,7 @@ export {
   detailArticlesRequest,
   getArticlesRequest,
   getUsersRequest,
+  registrationRequest,
+  addArticlesRequest,
+  getDetailArticlesRequest,
 };

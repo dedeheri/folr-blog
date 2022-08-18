@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 
 import Container from "../components/Container";
 import Header from "../components/Dashboard/Header";
@@ -24,11 +24,15 @@ import { getUsersRequest } from "../utils/action";
 
 function Dashboard() {
   const cookie = getAllCookies();
+
+  let location = useLocation();
   const [users, setUsers] = useState({
     user: {},
     loading: true,
     error: "",
     theme: cookie.theme,
+    token: cookie.__token,
+    login: cookie.isLogin,
   });
 
   // get api
@@ -52,8 +56,9 @@ function Dashboard() {
     getUsers();
   }, []);
 
-  console.log(cookie);
-
+  if (!users.token) {
+    return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
   if (users.error) {
     return (
       <DarkMode>
@@ -62,36 +67,36 @@ function Dashboard() {
         </Container>
       </DarkMode>
     );
-  } else {
-    return (
-      <Fragment>
-        <DarkMode>
-          <Header
-            data={users.user}
-            theme={users.theme}
-            loading={users.loading}
-          />
-          <Container>
-            <Routes>
-              {/* articles */}
-              <Route path={"/"} element={<Home />} />
-              <Route path={"/articles"} element={<Get />} />
-              <Route path={"/articles/:id/:slug"} element={<Detail />} />
-              <Route path={"/articles/update/:id/:slug"} element={<Update />} />
-              <Route path={"/articles/add"} element={<Add />} />
-              {/* category */}
-              <Route path={"/category"} element={<GetCategory />} />
-              <Route path={"/category/add"} element={<AddCategory />} />
-
-              {/* profile */}
-              {["/me", "/me/trends", "/me/session"].map((path, i) => {
-                return <Route key={i} path={path} element={<Me />} />;
-              })}
-            </Routes>
-          </Container>
-        </DarkMode>
-      </Fragment>
-    );
   }
+
+  return (
+    <Fragment>
+      <DarkMode>
+        {/* <Header data={users.user} theme={users.theme} loading={users.loading} /> */}
+        <Container
+          data={users.user}
+          theme={users.theme}
+          loading={users.loading}
+        >
+          <Routes>
+            {/* articles */}
+            <Route path={"/"} element={<Home />} />
+            <Route path={"/articles"} element={<Get />} />
+            <Route path={"/articles/:id/:slug"} element={<Detail />} />
+            <Route path={"/articles/update/:id/:slug"} element={<Update />} />
+            <Route path={"/articles/add"} element={<Add />} />
+            {/* category */}
+            <Route path={"/category"} element={<GetCategory />} />
+            <Route path={"/category/add"} element={<AddCategory />} />
+
+            {/* profile */}
+            {["/me", "/me/trends", "/me/session"].map((path, i) => {
+              return <Route key={i} path={path} element={<Me />} />;
+            })}
+          </Routes>
+        </Container>
+      </DarkMode>
+    </Fragment>
+  );
 }
 export default Dashboard;

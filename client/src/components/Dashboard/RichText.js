@@ -6,14 +6,10 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 function RichText({ error, ...rest }) {
   return (
     <div className="space-y-2 ">
-      <div
-        className={`rounded-md h-auto ${
-          error ? "border border-red-500" : " border dark:border-[#353535]"
-        }`}
-      >
+      <div>
         <Editor
-          editorClassName="px-4"
-          toolbarClassName="bg-yellow-100"
+          editorClassName="px-4 border-t overflow-y-auto scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-thumb-rounded-full scrollbar-thin"
+          toolbarClassName="bg-yellow-100 "
           {...rest}
         />
 

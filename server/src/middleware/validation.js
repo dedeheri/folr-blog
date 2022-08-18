@@ -12,6 +12,13 @@ function validation(props) {
           .withMessage("Email tidak boleh kosong")
           .isEmail()
           .withMessage("Format e-mail tidak didukng"),
+        body("privacyPolicies").custom((value, { req }) => {
+          if (req.body.privacyPolicies === "false") {
+            throw new Error("Setuju Syarat dan Kebijakan");
+          }
+
+          return true;
+        }),
         body("password")
           .notEmpty()
           .withMessage("Kata sandi tidak boleh kosong")
