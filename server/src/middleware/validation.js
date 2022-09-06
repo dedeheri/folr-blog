@@ -14,9 +14,10 @@ function validation(props) {
           .withMessage("Format e-mail tidak didukng"),
         body("privacyPolicies").custom((value, { req }) => {
           if (req.body.privacyPolicies === "false") {
-            throw new Error("Setuju Syarat dan Kebijakan");
+            throw new Error(
+              "Anda Harus setuju dengan Syarat dan Kebijakan Privasi kami"
+            );
           }
-
           return true;
         }),
         body("password")

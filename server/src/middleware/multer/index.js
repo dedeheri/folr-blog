@@ -18,6 +18,7 @@ const image = multer({
       file.mimetype == "image/png" ||
       file.mimetype == "image/jpg" ||
       file.mimetype == "image/jpeg" ||
+      file.mimetype == "image/JPEG" ||
       file.mimetype == "image/webp"
     ) {
       callback(null, true);

@@ -1,41 +1,36 @@
-import { Fragment, useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
-import Container from "./components/Container";
-import DarkMode from "./components/DarkMode";
-import Add from "./components/Dashboard/Add";
-import Header from "./components/Dashboard/Header";
-import Detail from "./page/Dashboard/Articles/Detail";
-import Get from "./page/Dashboard/Articles/Get";
-import Update from "./page/Dashboard/Articles/Update";
-import Home from "./page/Dashboard/Home";
-import Login from "./page/Login";
-import Registration from "./page/Registration";
-import Auth from "./router/Auth";
-import Dashboard from "./router/Dashboard";
+import React from "react";
+// router
+import { Routes, Route } from "react-router-dom";
+import AddArticles from "./page/backend/Articles/AddArticles";
+import Draft from "./page/backend/Articles/Draft";
+import GetArticles from "./page/backend/Articles/GetArticles";
+// components
+import Home from "./page/backend/Home";
+import Login from "./page/backend/Account/Login";
+import Registration from "./page/backend/Account/Registration";
+import Detail from "./page/backend/Articles/Detail";
 
-import config from "./apis/config";
+export default function App() {
+  const host = window.location.host.split(".")[0];
 
-import apis from "./apis/api";
-function App() {
-  const theme = JSON.parse(localStorage.getItem("theme")) || false;
-
-  if (window.location.host.split(".")[0] == "account") {
-    return (
-      <DarkMode theme={theme}>
-        <Routes>
-          <Route path={"/"} element={<Login />} />
-          <Route path={"/registration"} element={<Registration />} />
-        </Routes>
-      </DarkMode>
-    );
-  } else {
+  if (host === "account") {
     return (
       <Routes>
-        <Route path={"/auth/*"} element={<Auth />} />
-        <Route path={"/dashboard/*"} element={<Dashboard />} />
+        <Route element={<Login />} path="/" index />
+        <Route element={<Registration />} path="/registration" />
+      </Routes>
+    );
+  }
+
+  if (host === "dashboard") {
+    return (
+      <Routes>
+        <Route element={<Home />} path="/" index />
+        <Route element={<GetArticles />} path="/articles" />
+        <Route element={<Draft />} path="/articles/draft" />
+        <Route element={<AddArticles />} path="/articles/add" />
+        <Route element={<Detail />} path="/articles/:id/:slug" />
       </Routes>
     );
   }
 }
-
-export default App;

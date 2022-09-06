@@ -21,11 +21,12 @@ router.post(
 );
 router.get("/articles", verifyJWT, verification, articles.articles);
 router.get(
-  "/articles/trends",
+  "/articles/articles/trends",
   verifyJWT,
   verification,
   articles.articlesTrends
 );
+router.get("/articles/trends", verifyJWT, verification, articles.getTrends);
 router.post(
   "/articles/search",
   verifyJWT,

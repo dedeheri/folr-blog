@@ -27,6 +27,7 @@ async function registration(req, res) {
   const fullName = req.body.fullName;
   const email = req.body.email;
   const password = req.body.password;
+  const privacyPolicies = req.body.privacyPolicies;
 
   // validation body
   const errors = validationResult(req);
@@ -39,7 +40,9 @@ async function registration(req, res) {
   const auth = await authModel.findOne({ email });
   if (auth) {
     if (imageUrl?.path) deletedImage(imageUrl?.path);
-    return res.status(422).json({ message: "E-mail sudah terdaftar" });
+    return res
+      .status(422)
+      .json({ email: { message: "E-mail sudah terdaftar" } });
   }
 
   // generet password
@@ -83,7 +86,7 @@ async function registration(req, res) {
 
     return res.status(200).json({ message: `Email ${email} berhasil dibuat` });
   } catch (error) {
-    return res.status(500).json({ message: "Terjadi Kesalahan" });
+    return res.status(500).json({ error: { message: "Terjadi Kesalahan" } });
   }
 }
 
@@ -134,15 +137,19 @@ async function login(req, res) {
       res.cookie("isLogin", true, time);
       res.cookie("lang", "id", time);
       res.cookie("theme", "dark", time);
+      res.cookie("grid", true, time);
     } else {
-      const time = {
+      const config = {
         maxAge: 1 * 24 * 3600000,
+        domain: "localhost:3000",
+        SameSite: "Strict",
       };
       const token = generetedAccessToken(auth._id, "1d");
-      res.cookie("__token", token, time);
-      res.cookie("isLogin", true, time);
-      res.cookie("lang", "id", time);
-      res.cookie("theme", "dark", time);
+      res.cookie("__token", token, config);
+      res.cookie("isLogin", true, config);
+      res.cookie("lang", "id", config);
+      res.cookie("theme", "dark", config);
+      res.cookie("grid", true, config);
     }
 
     const { password, __v, imageUrl, ...rest } = auth._doc;
@@ -181,6 +188,7 @@ async function login(req, res) {
     }).save();
 
     return res.status(200).json({
+      message: "Berhasil Masuk",
       user: rest,
       access_token: rememberMe
         ? generetedAccessToken(auth._id, "30d")
@@ -205,4 +213,14 @@ async function user(req, res) {
   }
 }
 
-module.exports = { registration, login, user };
+async function logout(req, res) {
+  const cookies = req.cookies;
+  try {
+    Object.keys(cookies).map((cookie) => res.clearCookie(cookie));
+    return res.status(200).json({ message: "Barhasil keluar" });
+  } catch (error) {
+    return res.status(500).json({ message: "Terjadi kesalahan" });
+  }
+}
+
+module.exports = { registration, login, logout, user };

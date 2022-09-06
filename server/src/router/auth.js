@@ -18,5 +18,6 @@ router.post(
 );
 router.post("/login", validation("LOGIN"), auth.login);
 router.get("/user", verifyJWT, verification, auth.user);
+router.get("/logout", verifyJWT, auth.logout);
 
 module.exports = router;

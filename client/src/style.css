@@ -1,20 +1,3 @@
-
-.ql-toolbar.ql-snow , 
-.ql-container.ql-snow {
-	border: none !important;
-}
-
-.rdw-editor-main {
-	height: 40rem !important;
-}
-
-.rdw-embedded-modal {
-	height: 210px !important;
-	box-shadow : none !important
-}
 .rdw-editor-toolbar{
 	border: none !important;
-	background: transparent !important;
-	padding: 0.2rem  1rem !important ;
-
 }

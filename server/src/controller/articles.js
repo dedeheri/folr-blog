@@ -50,7 +50,7 @@ async function addArticles(req, res) {
 async function articles(req, res) {
   const filter = req.query.filter;
   const category = req.query.category;
-  const limit = parseInt(req.query.limit) || 2;
+  const limit = parseInt(req.query.limit) || 10;
 
   try {
     const results = [];
@@ -96,13 +96,24 @@ async function articles(req, res) {
     } else {
       return res.status(200).json({
         data: results.slice(0, limit),
-        lastData: results.slice(0, limit).length + 1,
-        hashMore: results.length >= limit ? true : false,
+        page: {
+          per_page: limit,
+          total: articles.length,
+        },
       });
     }
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Terjadi kesalahan" });
+  }
+}
+
+async function getTrends(req, res) {
+  try {
+    const articles = await articlesModel.find({}).sort({ view: -1 });
+    return res.status(200).json({ data: articles.splice(0, 5) });
+  } catch (error) {
+    return res.status(500).json({ message: "Terjadi Kesalahan" });
   }
 }
 
@@ -265,8 +276,7 @@ async function detailArticles(req, res) {
         _id: articlesAfterCount._id,
         title: articlesAfterCount.title,
         category: articlesAfterCount.category,
-        dislike: articlesAfterCount.dislike,
-        like: articlesAfterCount.like,
+        response: articlesAfterCount.response,
         view: articlesAfterCount.view,
         hastag: articlesAfterCount.hastag,
         imageUrl: articlesAfterCount.imageUrl,
@@ -303,7 +313,7 @@ async function deleteArticles(req, res) {
       );
 
       return res
-        .status(404)
+        .status(200)
         .json({ message: `Artikel ${articles.title} berhasil di hapus` });
     }
   } catch (error) {
@@ -366,4 +376,5 @@ module.exports = {
   articlesTrends,
   articlesSearch,
   FeaturedArticles,
+  getTrends,
 };
