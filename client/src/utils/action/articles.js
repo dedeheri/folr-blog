@@ -1,4 +1,5 @@
 import {
+  DELETE_ARTICLES,
   DETAIL_ARTICLES_REQUEST,
   getArticlesHomeRequest,
   getCategoryRequest,
@@ -67,4 +68,40 @@ async function getDetail(id, articles) {
   }
 }
 
-export { getArticles, getArticlesTrends, getCategory, getDetail };
+async function deleteArticles(id, articles) {
+  try {
+    articles((prev) => ({
+      ...prev,
+      fetching: true,
+    }));
+    const response = await DELETE_ARTICLES(id);
+    articles((prev) => ({
+      ...prev,
+      fetching: false,
+      success: true,
+      message: response.data.message,
+    }));
+
+    if (response.status === 200) {
+      setInterval(() => {
+        window.location.href = "http://dashboard.localhost:3000/articles";
+      }, 3000);
+    }
+  } catch (error) {
+    articles((prev) => ({
+      ...prev,
+      fetching: false,
+      success: false,
+      error: true,
+      message: error.response.data.message,
+    }));
+  }
+}
+
+export {
+  getArticles,
+  getArticlesTrends,
+  getCategory,
+  getDetail,
+  deleteArticles,
+};

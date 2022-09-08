@@ -6,7 +6,7 @@ function TextEditor({ error, ...rest }) {
     <div>
       <Editor
         {...rest}
-        toolbarClassName="flex sticky top-3 z-40 md:!justify-center mx-auto"
+        toolbarClassName="flex sticky top-[6rem] bg-red-500 z-30 md:!justify-center mx-auto"
         editorClassName="mt-2 md:mt-10 mb-12 px-4 bg-white dark:bg-[#3A3B3C] md:drop-shadow-md  max-w-5xl mx-auto rounded-sm scrollbar-hide"
       />
     </div>

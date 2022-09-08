@@ -42,7 +42,7 @@ function Sidebar({ sidebar }) {
         )}
       </NavLink>
       <NavLink
-        to={"/articel"}
+        to={"/category"}
         className={({ isActive }) => (isActive ? active : nonActive)}
       >
         <ClipboardListIcon className="w-6 md:w-7" />

@@ -1,8 +1,12 @@
 import { Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
-import { DotsVerticalIcon } from "@heroicons/react/outline";
+import { CheckIcon, DotsVerticalIcon } from "@heroicons/react/outline";
 
-function Dropdown() {
+function Dropdown({ state, set }) {
+  function saveAsDraft() {
+    set((prev) => ({ ...prev, published: !state }));
+  }
+
   return (
     <div className="">
       <Menu as="div" className="relative inline-block text-left">
@@ -20,34 +24,29 @@ function Dropdown() {
           leaveFrom="transform opacity-100 scale-100"
           leaveTo="transform opacity-0 scale-95"
         >
-          <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="px-1 py-1 ">
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active ? "bg-gray-100" : "text-gray-900"
-                    } group flex w-full items-center rounded-md px-2 py-2 text-md`}
-                  >
-                    Batal
-                  </button>
-                )}
-              </Menu.Item>
-            </div>
+          <Menu.Items className="absolute z-50 right-0 mt-2 w-64 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Item>
+              <div className="text-gray-900 flex space-x-3 hover:bg-gray-100 w-full items-center cursor-pointer font-medium rounded-md px-2 py-2 text-md">
+                <h1>Batal</h1>
+              </div>
+            </Menu.Item>
 
-            <div className="px-1 py-1 ">
-              <Menu.Item>
-                {({ active }) => (
-                  <button
-                    className={`${
-                      active ? "bg-gray-100" : "text-gray-900"
-                    } group flex w-full items-center rounded-md px-2 py-2 text-md`}
-                  >
-                    Simpan sebagai draft
-                  </button>
-                )}
-              </Menu.Item>
-            </div>
+            <Menu.Item>
+              <div
+                onClick={saveAsDraft}
+                className={`text-gray-900 flex justify-between hover:bg-gray-100 w-full items-center cursor-pointer font-medium rounded-md px-2 py-2 text-md`}
+              >
+                <div className="flex  space-x-3 ">
+                  <h1>Simpan sebagai draft</h1>
+                </div>
+                {state === false && <CheckIcon className="w-4" />}
+              </div>
+            </Menu.Item>
+            <Menu.Item>
+              <div className="text-gray-900 flex space-x-3 hover:bg-gray-100 w-full items-center cursor-pointer font-medium rounded-md px-2 py-2 text-md">
+                <h1>Masukan</h1>
+              </div>
+            </Menu.Item>
           </Menu.Items>
         </Transition>
       </Menu>

@@ -50,7 +50,7 @@ function AddArticles() {
     imageUrl: null,
     imageUrlCredit: "",
     imagePriview: null,
-
+    published: true,
     fetching: false,
     message: null,
     success: false,
@@ -157,6 +157,8 @@ function AddArticles() {
     }
   }
 
+  console.log(articles);
+
   return (
     <Darkmode theme={false}>
       {/* title */}
@@ -202,7 +204,7 @@ function AddArticles() {
               </svg>
             </button>
 
-            <Dropdown />
+            <Dropdown state={articles.published} set={setArticles} />
           </div>
         </div>
 
@@ -238,7 +240,7 @@ function AddArticles() {
                   <Button onClick={handleAddPost} text="Simpan" />
                 )}
 
-                <Dropdown />
+                <Dropdown state={articles.published} set={setArticles} />
               </div>
             </div>
 
@@ -407,7 +409,7 @@ function AddArticles() {
 
         {/* content */}
         {/* tile */}
-        <div className="max-w-6xl mx-auto pt-9 md:pt-20 space-y-7">
+        <div className="max-w-6xl mx-auto pt-9 md:pt-7  space-y-7">
           {articles.success && <ToastSuccess message={articles.message} />}
 
           <TextEditor

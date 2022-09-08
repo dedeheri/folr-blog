@@ -41,7 +41,7 @@ function Container({ title, children, sideShow }) {
 
       <Navbar user={user} handleSidebar={handleSidebar} theme={cookie.theme} />
       <div className="flex">
-        {sideShow && <Sidebar sidebar={sidebar} />}
+        <Sidebar sidebar={sidebar} />
         <div
           className={` py-4 w-full duration-300  pl-[5rem] pr-8 md:pr-10 ${
             sidebar ? "md:pl-[6rem]" : "md:pl-[16rem] "

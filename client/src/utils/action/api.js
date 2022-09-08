@@ -17,8 +17,15 @@ function addArticlesRequest(formData) {
   return api.post("api/v1/articles/add", formData, config.headerJSON);
 }
 
+function DELETE_ARTICLES(id) {
+  return api.delete(`api/v1/articles/${id}`, config.headerJSON);
+}
+
 // category
 function getCategoryRequest() {
+  return api.get("api/v1/category", config.headerJSON);
+}
+function GET_API_CATEGORY() {
   return api.get("api/v1/category", config.headerJSON);
 }
 
@@ -38,4 +45,6 @@ export {
   addArticlesRequest,
   API_USER,
   DETAIL_ARTICLES_REQUEST,
+  GET_API_CATEGORY,
+  DELETE_ARTICLES,
 };

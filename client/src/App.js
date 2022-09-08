@@ -9,6 +9,7 @@ import Home from "./page/backend/Home";
 import Login from "./page/backend/Account/Login";
 import Registration from "./page/backend/Account/Registration";
 import Detail from "./page/backend/Articles/Detail";
+import GetCategory from "./page/backend/Category/GetCategory";
 
 export default function App() {
   const host = window.location.host.split(".")[0];
@@ -30,6 +31,9 @@ export default function App() {
         <Route element={<Draft />} path="/articles/draft" />
         <Route element={<AddArticles />} path="/articles/add" />
         <Route element={<Detail />} path="/articles/:id/:slug" />
+
+        {/* category */}
+        <Route element={<GetCategory />} path="/category" />
       </Routes>
     );
   }

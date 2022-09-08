@@ -1,5 +1,3 @@
-import React from "react";
-
 import {
   ArchiveIcon,
   EyeIcon,
@@ -14,6 +12,7 @@ import {
 import { Popover, Tab, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
+import { getCategoryRequest } from "../../utils/action/category";
 
 const activeStateNavLink =
   "flex items-center space-x-2 border-b-[0.2rem] border-[#2374e1] px-2 pt-3 pb-1";
@@ -21,6 +20,34 @@ const unActiveStateNavLink =
   "flex items-center space-x-2 border-b-[0.2rem] border-transparent px-2 pt-3 pb-1";
 
 function Fitler() {
+  const [category, setCategory] = useState({
+    data: "",
+    loading: true,
+    error: false,
+    success: false,
+    message: "",
+    result: {},
+  });
+
+  const [resultSearchTerm, setResultSearchTerm] = useState("");
+
+  useEffect(() => {
+    getCategoryRequest(setCategory);
+  }, [resultSearchTerm]);
+
+  useEffect(() => {
+    setCategory((prev) => ({ ...prev, loading: true }));
+    const filter = Object.values(category.data).filter((fill) => {
+      return fill.category
+        .toLowerCase()
+        .includes(resultSearchTerm.toLowerCase());
+    });
+
+    setCategory((prev) => ({ ...prev, loading: false, result: filter }));
+  }, [category.data, resultSearchTerm]);
+
+  console.log(category);
+
   const navigate = useNavigate();
   function handleFilterFeatured(key, value) {
     navigate({
@@ -47,7 +74,7 @@ function Fitler() {
         leaveFrom="opacity-100 translate-y-0"
         leaveTo="opacity-0 translate-y-1"
       >
-        <Popover.Panel className="absolute left-0 z-10 mt-2 w-80 px-4 sm:px-0 ">
+        <Popover.Panel className="absolute left-0 z-10 mt-2 w-72 md:w-80 px-4 sm:px-0 ">
           <div className="overflow-hidden rounded-lg border dark:border-[#353535]">
             <div className="bg-white dark:bg-[#242526] ">
               <Tab.Group>
@@ -57,14 +84,16 @@ function Fitler() {
                       selected ? activeStateNavLink : unActiveStateNavLink
                     }
                   >
-                    <h1 className="font-medium text-lg">Kategori</h1>
+                    <h1 className="font-medium text-md md:text-lg">Kategori</h1>
                   </Tab>
                   <Tab
                     className={({ selected }) =>
                       selected ? activeStateNavLink : unActiveStateNavLink
                     }
                   >
-                    <h1 className="font-medium text-lg">Berdasarkan</h1>
+                    <h1 className="font-medium text-md md:text-lg">
+                      Berdasarkan
+                    </h1>
                   </Tab>
                 </Tab.List>
                 <Tab.Panels>
@@ -72,49 +101,50 @@ function Fitler() {
                     <div className="space-y-3 p-3">
                       {/* search */}
                       <div className="w-full flex px-2 border-b dark:border-[#353535]">
-                        <SearchIcon className="w-7 md:w-6 " />
+                        <SearchIcon className="w-5 md:w-6 " />
                         <input
                           autoFocus={true}
                           className="h-10 w-full bg-transparent outline-none px-2 placeholder:font-medium"
                           placeholder="Cari Kategori..."
+                          onChange={(e) => setResultSearchTerm(e.target.value)}
                         />
                       </div>
 
                       {/* list */}
-                      {/* <div className="h-52 overflow-y-auto scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-thumb-rounded-full scrollbar-thin">
-                        {loading ? (
+                      <div className="h-44 md:h-52 overflow-y-auto scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-thumb-rounded-full scrollbar-thin">
+                        {category.loading ? (
                           <div className="space-y-3 animate-pulse">
-                            {[...Array(5)].map((_, i) => (
+                            {[...Array(6)].map((_, i) => (
                               <div
                                 key={i}
-                                className="bg-gray-200 dark:bg-[#353535] h-8 rounded-md"
+                                className="bg-gray-200 dark:bg-[#353535] h-6 rounded-md"
                               />
                             ))}
                           </div>
-                        ) : error ? (
+                        ) : category.error ? (
                           <h1 className="font-medium text-lg bg-red-500 p-1 rounded-md">
                             Terjadi Kesalahan
                           </h1>
-                        ) : resultSearchTerm?.length === 0 ? (
-                          <h1 className="font-medium text-xl h-44 flex justify-center items-center text-gray-500">
+                        ) : category.result.length === 0 ? (
+                          <h1 className="font-medium text-lg md:text-xl h-44 flex justify-center items-center text-gray-500">
                             Pencarian tidak ditemukan
                           </h1>
                         ) : (
-                          resultSearchTerm?.map((l, i) => (
+                          category.result?.map((l, i) => (
                             <div
                               key={i}
                               className="p-1 hover:bg-gray-100 hover:dark:bg-[#363535] rounded-md duration-200 cursor-pointer"
                             >
                               <div
-                                onClick={() => handleFilterTopics(l.category)}
-                                className="font-medium text-lg"
+                                // onClick={() => handleFilterTopics(l.category)}
+                                className="font-medium text-md md:text-lg"
                               >
                                 {l.category}
                               </div>
                             </div>
                           ))
                         )}
-                      </div> */}
+                      </div>
                     </div>
                   </Tab.Panel>
                   <Tab.Panel>
