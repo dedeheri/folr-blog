@@ -10,6 +10,7 @@ import Login from "./page/backend/Account/Login";
 import Registration from "./page/backend/Account/Registration";
 import Detail from "./page/backend/Articles/Detail";
 import GetCategory from "./page/backend/Category/GetCategory";
+import UpdateArticles from "./page/backend/Articles/UpdateArticles";
 
 export default function App() {
   const host = window.location.host.split(".")[0];
@@ -27,10 +28,12 @@ export default function App() {
     return (
       <Routes>
         <Route element={<Home />} path="/" index />
+        {/* articlles */}
         <Route element={<GetArticles />} path="/articles" />
         <Route element={<Draft />} path="/articles/draft" />
         <Route element={<AddArticles />} path="/articles/add" />
         <Route element={<Detail />} path="/articles/:id/:slug" />
+        <Route element={<UpdateArticles />} path="/articles/update/:id" />
 
         {/* category */}
         <Route element={<GetCategory />} path="/category" />

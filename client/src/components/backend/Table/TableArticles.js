@@ -1,5 +1,5 @@
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import trancute from "../../../utils/trancute";
 
 import Button from "../Utils/Button";
@@ -21,6 +21,7 @@ import Modal from "../Utils/Modal";
 import { deleteArticles } from "../../../utils/action/articles";
 
 function TableArticles({ data }) {
+  const navigate = useNavigate();
   const coulums = [
     "Judul",
     "Dilihat",
@@ -52,6 +53,13 @@ function TableArticles({ data }) {
   function handleDeleteArticles() {
     deleteArticles(deleted.id, setDeleted);
   }
+
+  // function handleRoute(id, slud) {
+  //   navigate({
+
+  //   })
+  // }
+
   return (
     <>
       <div className="overflow-y-auto scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-thumb-rounded-full scrollbar-thin">
@@ -92,9 +100,11 @@ function TableArticles({ data }) {
                     <button className="hover:bg-gray-100 dark:hover:bg-[#3A3B3C] p-2 rounded-full duration-300">
                       <ChartBarIcon className="w-5" />
                     </button>
-                    <button className="hover:bg-gray-100 dark:hover:bg-[#3A3B3C] p-2 rounded-full duration-300">
-                      <PencilIcon className="w-5" />
-                    </button>
+                    <Link to={`/articles/update/${d._id}`}>
+                      <button className="hover:bg-gray-100 dark:hover:bg-[#3A3B3C] p-2 rounded-full duration-300">
+                        <PencilIcon className="w-5" />
+                      </button>
+                    </Link>
                     <button
                       onClick={() => handleShowModalDelete(d._id, d.title)}
                       className="hover:bg-gray-100 dark:hover:bg-[#3A3B3C] p-2 rounded-full duration-300"
@@ -172,11 +182,11 @@ function TableArticles({ data }) {
           {deleted.error && <ToastError message={deleted.message} />}
           {deleted.success && <ToastSuccess message={deleted.message} />}
 
-          <div className="flex flex-col justify-center items-center">
+          <div className="flex flex-col justify-center items-center text-black dark:text-white">
             <h1 className="text-lg md:text-lg font-medium">
               Apakah anda akan menghapus ? {deleted.title}
             </h1>
-            <h1 className="text-md font-base text-gray-300">
+            <h1 className="text-md font-base text-gray-500 dark:text-gray-300">
               Data yang dihapus tidak akan bisa dipulihkan kembali
             </h1>
           </div>

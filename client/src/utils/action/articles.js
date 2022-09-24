@@ -60,7 +60,7 @@ async function getDetail(id, articles) {
       ...prev,
       loading: false,
       success: true,
-      message: "",
+      message: "success",
       data: response.data.data,
     }));
   } catch (error) {
